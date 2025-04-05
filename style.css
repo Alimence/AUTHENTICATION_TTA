@@ -22,8 +22,8 @@ body {
 
 .login-container h2 {
     margin: 5px 0px;
-    color:#333,
-    text-align: center;
+    color:#333;
+    text-align:center;
 }
 
 .login-container label {
@@ -42,7 +42,7 @@ input[type="password"]{
 }
 
 button {
-    width: 80%;
+    width: 95%;
     margin-top: 13px;
     padding: 7px;
     background-color: #007bff;
