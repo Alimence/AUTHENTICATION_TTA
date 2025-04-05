@@ -60,5 +60,10 @@ button:hover {
     color: red;
     margin: 5px 0;
     text-align: center;
+}
 
+.success-message {
+    color: green;
+    margin: 5px 0;
+    text-align: center;
 }
