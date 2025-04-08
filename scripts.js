@@ -74,5 +74,18 @@ function displayContent(role) {
         `
     }
 
+    const logoutButton = document.createElement('button');
+    logoutButton.textContent = 'Logout';
+    logoutButton.classList.add('logout-button');
+
+    logoutButton.addEventListener('click', logout);
+
+    contentDiv.appendChild(logoutButton);
+
     document.body.appendChild(contentDiv);
+}
+
+const logout = () => {
+    localStorage.removeItem('userRole');
+    location.reload();
 }

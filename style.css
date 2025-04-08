@@ -75,3 +75,12 @@ button:hover {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
+.logout-button{
+    width: 95%;
+    background-color: #ff1a1a;
+}
+
+.logout-button:hover {
+    background-color: #ff6666;
+}
