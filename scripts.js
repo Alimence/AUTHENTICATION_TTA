@@ -16,6 +16,13 @@ const users = [
     }
 ]
 
+document.addEventListener('DOMcontentLoaded', () => {
+    const savedRole = localStorage.getItem('userRole');
+    if (savedRole) {
+        displayContent(savedRole);
+    }
+})
+
 const loginForm = document.querySelector('#loginForm')
 
 loginForm.addEventListener('submit', function(e) {
@@ -34,6 +41,7 @@ loginForm.addEventListener('submit', function(e) {
         if (user) {
             errorContainer.textContent = '';
             successContainer.textContent = `Welcome ${user.role}`;
+            localStorage.setItem('userRole', user.role);
             displayContent(user.role);
             //alert(`Welcome ${user.role}`);
         } else {
