@@ -84,3 +84,15 @@ button:hover {
 .logout-button:hover {
     background-color: #ff6666;
 }
+
+.create-button{
+    background-color: skyblue;
+}
+
+.create-button:hover {
+background-color: #00cc00;
+}
+
+.view-button {
+
+}
