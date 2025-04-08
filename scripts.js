@@ -34,9 +34,37 @@ loginForm.addEventListener('submit', function(e) {
         if (user) {
             errorContainer.textContent = '';
             successContainer.textContent = `Welcome ${user.role}`;
+            displayContent(user.role);
             //alert(`Welcome ${user.role}`);
         } else {
             errorContainer.textContent = 'Invalid username or password';
         }
     } 
 })
+
+function displayContent(role) {
+    const loginContainer = document.querySelector('.login-container');
+    loginContainer.style.display = 'none';
+
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'content';
+
+    if (role === 'admin') {
+        contentDiv.innerHTML = `
+            <h1>Welcome ${role}</h1>
+            <p>You have access to manage all data and settings</p>
+        `
+    } else  if (role === 'editor') {
+        contentDiv.innerHTML = `
+            <h1>Welcome ${role}</h1>
+            <p>You have access to edit the content</p>
+        `
+    }  if (role === 'viewer') {
+        contentDiv.innerHTML = `
+            <h1>Welcome ${role}</h1>
+            <p>You have access to view the content</p>
+        `
+    }
+
+    document.body.appendChild(contentDiv);
+}
