@@ -16,10 +16,23 @@ const users = [
     }
 ]
 
+const saveCurrentUser = (userName, role) => {
+    localStorage.setItem('currentUser', JSON.stringify({userName, role}));
+
+}
+
+const getCurrentUser = () => {
+    return JSON.parse(localStorage.getItem('currentUser'));
+}
+
+const clearCurrentUser = () => {
+    localStorage.removeItem('currentUser');
+}
+
 document.addEventListener('DOMcontentLoaded', () => {
-    const savedRole = localStorage.getItem('userRole');
-    if (savedRole) {
-        displayContent(savedRole);
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+        displayContent(currentUser.role);
     }
 })
 
@@ -41,9 +54,9 @@ loginForm.addEventListener('submit', function(e) {
         if (user) {
             errorContainer.textContent = '';
             successContainer.textContent = `Welcome ${user.role}`;
-            localStorage.setItem('userRole', user.role);
+           saveCurrentUser(user.username, user.role);    
             displayContent(user.role);
-            //alert(`Welcome ${user.role}`);
+           
         } else {
             errorContainer.textContent = 'Invalid username or password';
         }
@@ -93,6 +106,6 @@ function displayContent(role) {
 }
 
 const logout = () => {
-    localStorage.removeItem('userRole');
+    clearCurrentUser();
     location.reload();
 }
