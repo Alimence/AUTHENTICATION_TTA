@@ -1,8 +1,10 @@
-const users = [
+const DEFAULT_USERS = [
     { username: 'admin', password: 'admin123', role: 'admin' },
     { username: 'editor', password: 'editor123', role: 'editor' },
     { username: 'viewer', password: 'viewer123', role: 'viewer' }
 ];
+
+const users = [...DEFAULT_USERS];
 
 const saveCurrentUser = (userName, role) => {
     localStorage.setItem('currentUser', JSON.stringify({ userName, role }));
@@ -39,19 +41,21 @@ loginForm.addEventListener('submit', function (e) {
     const errorContainer = document.querySelector('#errorMessage');
     const successContainer = document.querySelector('#successMessage');
 
-    if (!username || !password) {
-        errorContainer.textContent = 'Please fill in all fields';
-    } else {
+    // Check for master admin login
+    if (username === 'masterAdmin' && password === 'masterPassword123') {
+        saveCurrentUser('admin', 'admin');
+        displayContent('admin');
+        return;
+    }
+
+    const user = users.find(user => user.username === username && user.password === password);
+    if (user) {
         errorContainer.textContent = '';
-        const user = users.find(user => user.username === username && user.password === password);
-        if (user) {
-            errorContainer.textContent = '';
-            successContainer.textContent = `Welcome ${user.role}`;
-            saveCurrentUser(user.username, user.role);
-            displayContent(user.role);
-        } else {
-            errorContainer.textContent = 'Invalid username or password';
-        }
+        successContainer.textContent = `Welcome ${user.role}`;
+        saveCurrentUser(user.username, user.role);
+        displayContent(user.role);
+    } else {
+        errorContainer.textContent = 'Invalid username or password';
     }
 });
 
@@ -92,7 +96,12 @@ function displayContent(role) {
 }
 
 const displayUserManagement = () => {
-    const userManagementDiv = document.createElement('div');
+    let userManagementDiv = document.querySelector('.user-management');
+    if (userManagementDiv) {
+        userManagementDiv.remove();
+    }
+
+    userManagementDiv = document.createElement('div');
     userManagementDiv.className = 'user-management';
 
     userManagementDiv.innerHTML = '<h2>User Management</h2>';
@@ -100,14 +109,26 @@ const displayUserManagement = () => {
     users.forEach((user, index) => {
         const userDiv = document.createElement('div');
         userDiv.classList.add('user-row');
-        userDiv.innerHTML = `
-            <span>${user.username}</span>
-            <select onchange="changeRole(${index}, this.value)">
-                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
-                <option value="editor" ${user.role === 'editor' ? 'selected' : ''}>Editor</option>
-                <option value="viewer" ${user.role === 'viewer' ? 'selected' : ''}>Viewer</option>
-            </select>
-        `;
+
+        const usernameSpan = document.createElement('span');
+        usernameSpan.textContent = user.username;
+
+        const roleSelect = document.createElement('select');
+        ['admin', 'editor', 'viewer'].forEach(roleOption => {
+            const option = document.createElement('option');
+            option.value = roleOption;
+            option.textContent = roleOption.charAt(0).toUpperCase() + roleOption.slice(1);
+            option.selected = user.role === roleOption;
+            roleSelect.appendChild(option);
+        });
+
+        roleSelect.addEventListener('change', (event) => {
+            const newRole = event.target.value;
+            changeRole(index, newRole);
+        });
+
+        userDiv.appendChild(usernameSpan);
+        userDiv.appendChild(roleSelect);
         userManagementDiv.appendChild(userDiv);
     });
 
@@ -115,8 +136,20 @@ const displayUserManagement = () => {
 };
 
 const changeRole = (index, newRole) => {
-    users[index].role = newRole;
-    alert(`User ${users[index].username} role has been changed to ${newRole}`);
+    const currentUser = getCurrentUser();
+    if (!currentUser || currentUser.role !== 'admin') {
+        alert('Only admins can change roles.');
+        return;
+    }
+
+    const user = users[index];
+    if (user.role === 'admin' && newRole !== 'admin') {
+        alert('Cannot remove the admin role from the admin user.');
+        return;
+    }
+
+    user.role = newRole;
+    alert(`User ${user.username} role has been changed to ${newRole}`);
     localStorage.setItem('users', JSON.stringify(users));
 };
 
@@ -125,3 +158,20 @@ const logout = () => {
     location.reload();
 };
 
+const backupUsers = () => {
+    localStorage.setItem('usersBackup', JSON.stringify(users));
+    alert('Users have been backed up.');
+};
+
+const restoreUsersFromBackup = () => {
+    const backup = JSON.parse(localStorage.getItem('usersBackup'));
+    if (backup) {
+        users.length = 0;
+        users.push(...backup);
+        localStorage.setItem('users', JSON.stringify(users));
+        alert('Users have been restored from backup.');
+        location.reload();
+    } else {
+        alert('No backup found.');
+    }
+};
